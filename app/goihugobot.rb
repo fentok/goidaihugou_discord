@@ -1,18 +1,14 @@
-require 'discordrb'
-
-TOKEN = 'cbsNf2HKV6APgJYH6V_XaQyqMONIw3_b'
-CLIENT_ID = '389603994630225920'
+TOKEN = 'uVjsQdmxZbgrkceqMPVaowWXiIV8zKa'
+CLIENT_ID = 389603994630225920
 TOKEN.freeze
 CLIENT_ID.freeze
 
-bot = Discordrb::Commands::CommandBot.new (
-token: TOKEN,
-client_id: CLIENT_ID,
-prefix:'/',
-)
+require 'discordrb'
 
-bot.command :hello do |event|
- event.send_message("hallo,world.#{event.user.name}")
+bot = Discordrb::Bot.new token: TOKEN, client_id: CLIENT_ID
+
+bot.message do |event|
+    event.respond 'Hello, world!'
 end
 
 bot.run
