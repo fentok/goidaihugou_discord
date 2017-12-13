@@ -1,4 +1,8 @@
+<<<<<<< HEAD
 
+=======
+TOKEN = 'uVjsQdmxZbgrkceqMPVaowWXiIV8zKa'
+>>>>>>> parent of 16ec8cd... test
 CLIENT_ID = 389603994630225920
 CLIENT_ID.freeze
 #認証用URL
@@ -9,6 +13,7 @@ require 'dotenv'
 
 Dotenv.load
 
+<<<<<<< HEAD
 bot = Discordrb::Commands::CommandBot.new token:ENV["TOKEN"], client_id: CLIENT_ID, prefix: '/'
 
 bot.command :hello do |event|
@@ -25,6 +30,12 @@ end
 bot.command :list do |event|
 #  File.open(../goi/{event.userame}.txt)
   event.send_message("#{event.user.name}の語彙リストです。(まだ未実装です)")
+=======
+bot = Discordrb::Bot.new token: TOKEN, client_id: CLIENT_ID
+
+bot.message do |event|
+    event.respond 'Hello, world!'
+>>>>>>> parent of 16ec8cd... test
 end
 
 # 語彙リストの中から番号に対応した語彙を表示
