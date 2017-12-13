@@ -15,7 +15,7 @@ end
 
 # 語彙リストを初期化した後登録
 bot.command :create do |event|
-  event.send_message("語彙を5つ入力してください。#{event.user.name}")
+  event.send_message("語彙を5つ入力してください。#{event.user.name}(まだ未実装です)")
 end
 
 
