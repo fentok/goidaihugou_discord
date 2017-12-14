@@ -1,6 +1,5 @@
 
 CLIENT_ID = 389603994630225920
-TOKEN.freeze
 CLIENT_ID.freeze
 #認証用URL
 #https://discordapp.com/api/oauth2/authorize?client_id=389603994630225920&permissions=75776&scope=bot
@@ -10,7 +9,6 @@ require 'dotenv'
 
 Dotenv.load
 
-bot = Discordrb::Commands::CommandBot.new token:TOKEN, client_id: CLIENT_ID, prefix: '/'
 bot = Discordrb::Commands::CommandBot.new token:ENV["TOKEN"], client_id: CLIENT_ID, prefix: '/'
 
 bot.command :hello do |event|
