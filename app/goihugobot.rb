@@ -1,15 +1,10 @@
 
-CLIENT_ID = 389603994630225920
-CLIENT_ID.freeze
-#認証用URL
-#https://discordapp.com/api/oauth2/authorize?client_id=389603994630225920&permissions=75776&scope=bot
-
 require 'discordrb'
 require 'dotenv'
 
 Dotenv.load
 
-bot = Discordrb::Commands::CommandBot.new token:ENV["TOKEN"], client_id: CLIENT_ID, prefix: '/'
+bot = Discordrb::Commands::CommandBot.new token:ENV["TOKEN"], client_id: ENV["CLIENT_ID"], prefix: '/'
 
 bot.command :hello do |event|
  event.send_message("こんにちは。#{event.user.name}")
@@ -17,7 +12,7 @@ end
 # 語彙リストを初期化した後登録
 bot.command :create do |event|
   event.send_message("語彙を5つ入力してください。#{event.user.name}(まだ未実装です)")
-  # 変えたら
+  # 変えたら任意のチャンネルに投下
 end
 
 
