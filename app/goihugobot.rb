@@ -3,10 +3,13 @@
 require 'discordrb'
 require 'dotenv'
 
-
+CORDING_MODE = "utf-8:sjis"
 GOI_ARR_LENGTH = 5
 
 Dotenv.load
+
+# デッキ配列
+deck = []
 
 bot = Discordrb::Commands::CommandBot.new token:ENV["TOKEN"], client_id: ENV["CLIENT_ID"], prefix: '/'
 
@@ -51,32 +54,118 @@ end
 # 語彙リストを表示 ==============================================================
 #bot.command :list do |event|
 bot.command :list do |event|
-#  File.open(../goi/{event.userame}.txt)
-#  event.end_message()
-#end
-  event.send_message("#{event.user.name}の語彙リストです。(まだ未実装です)")
+  fname = "tmp/#{event.user.name}.goi"
+  begin
+    File.open(fname, "r:"+CORDING_MODE) do |f|
+      event.send_message("#{event.user.name}の語彙リストです。")
+      # 行:語彙の書式で出力
+      str = ""
+      value = 1
+      f.each_line do |labman|
+        str << value.to_s()
+        str << ": "
+        str << labman
+        value += 1
+      end
+      event.send_message(str)
+    end
+    # エラーコード
+  rescue SystemCallError => e
+    puts %Q(class=[#{e.class}] message=[#{e.message}])
+    event.send_message("#{event.user.name}の語彙リストを読み込めません")
+  rescue IOError => e
+    puts %Q(class=[#{e.class}] message=[#{e.message}])
+    event.send_message("#{event.user.name}の語彙リストを読み込めません")
+  end
 end
 
 # 語彙リストの中から番号に対応した語彙を表示 ======================================
 bot.command :cast do |event|
-  event.send_message("まだ未実装です。#{event.user.name}")
+  fname = "tmp/#{event.user.name}.goi"
+  # 表示する語彙に対応する番号
+  castnum = "#{event.message}".split()[1].to_i()
+  puts(castnum.to_s())
+  if (castnum >= 1 && castnum <=5) then
+    begin
+      File.open(fname, "r:"+CORDING_MODE) do |f|
+        str = f.readlines[castnum-1]
+        event.send_message(str)
+      end
+      # エラーコード
+    rescue SystemCallError => e
+      puts %Q(class=[#{e.class}] message=[#{e.message}])
+      event.send_message("#{event.user.name}の語彙リストを読み込めません")
+    rescue IOError => e
+      puts %Q(class=[#{e.class}] message=[#{e.message}])
+      event.send_message("#{event.user.name}の語彙リストを読み込めません")
+    end
+  else
+    event.send_message("以下のように入力してください。\n/cast [1-5]")
+  end
+end
+
+# デッキからランダムに1枚表示、デッキ生成 ========================================
+bot.command :deck do |event|
+  option = "#{event.message}".split()[1]
+  case option
+  # deck配列にデッキテキストを流し込む
+  when "init" then
+    fname = "deck/deck.txt"
+    begin
+      File.open(fname) do |file|
+        deck = file.read.split()
+      end
+      event.send_message("デッキを初期化しました。")
+    # エラーコード
+    rescue SystemCallError => e
+      event.send_message("デッキを読み込めません")
+    rescue IOError => e
+      event.send_message("デッキを読み込めません")
+    end
+  # deckのランダムな箇所を表示して削除
+  else
+    if (deck.nil? || deck.empty?) then
+      event.send_message("デッキを初期化してください。\n/deck init")
+    else
+      rand_num = rand(deck.length)
+      str = deck[rand_num]
+      event.send_message("ドロー！")
+      deck.delete_at(rand_num)
+    end
+  end
 end
 
 # ヘルプ表示  ==================================================================
 bot.command :help do |event|
   event.send_message(" /hello : 挨拶します
   /create [重複なしの単語5つ] : 語彙リストを作成します
-
-  ----------------------未実装---------------------
   /list : 語彙リストを見せます
-  /cast [番号] : 語彙リストの中から番号に対応した語彙を表示します
+  /cast [1-5] : 語彙リストの中から番号に対応した語彙を表示します
   /help : 今開いてるのはなんですか？
+  ----------------------未実装---------------------
+  /deck : デッキからランダムに語彙を1つ表示します
   ----------------------謎機能---------------------
   /fenia : フェニアを召喚します")
 end
 
+#==============================================================================
+
+
+
+
+
+
+# フェニア召喚機能  =============================================================
 bot.command :fenia do |event|
-  event.send_message(":hatched_chick: フェニアだよ！")
+  option = "#{event.message}".split()[1]
+  case option
+  when "burn" then
+    event.send_message(":fire::hatched_chick::fire:\n\n人人人\n> :poultry_leg: <\n^Y^Y^Y^")
+  else
+    event.send_message(":hatched_chick: フェニアだよ！")
+  end
 end
+
+
 
 bot.run
