@@ -25,15 +25,23 @@ bot.command :create do |event|
 
   if goiarr.length == GOI_ARR_LENGTH then
     event.send_message("語彙を登録します。#{event.user.name}")
-    # tmp/ユーザ名.txtに保存
-    fname = "tmp/#{event.user.name}.txt"
+    # tmp/ユーザ名.goiに保存
+    fname = "tmp/#{event.user.name}.goi"
     File.open(fname,"w") do |f|
       goiarr.each do |i|
         f.puts(i)
       end
     end
-    # 変えたら任意のチャンネルにメッセージを投下
-    bot.send_message(token:ENV["GENERAL_CHANNEL_ID"], "#{event.user.name}の語彙を登録しました。")
+    # goi/ユーザ名.txtに履歴として保存
+    fname = "goi/#{event.user.name}.txt"
+    File.open(fname,"a") do |f|
+      goiarr.each do |i|
+        f.puts(i)
+      end
+      f.puts("----------------------------------------")
+    end
+    # 変えたら任意のチャンネルにメッセージを投下(不正防止)
+    bot.send_message(ENV["GENERAL_CHANNEL_ID"], "#{event.user.name}の語彙を登録しました。")
   else
     event.send_message("語彙を重複無く5つ入力してください。#{event.user.name}")
   end
@@ -57,8 +65,9 @@ end
 # ヘルプ表示  ==================================================================
 bot.command :help do |event|
   event.send_message(" /hello : 挨拶します
-  ----------------------未実装---------------------
   /create [重複なしの単語5つ] : 語彙リストを作成します
+
+  ----------------------未実装---------------------
   /list : 語彙リストを見せます
   /cast [番号] : 語彙リストの中から番号に対応した語彙を表示します
   /help : 今開いてるのはなんですか？
