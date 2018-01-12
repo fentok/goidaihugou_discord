@@ -10,6 +10,10 @@ Dotenv.load
 
 # デッキ配列
 deck = []
+deck_init = []
+
+# 参加者の順序配列
+turn = []
 
 bot = Discordrb::Commands::CommandBot.new token:ENV["TOKEN"], client_id: ENV["CLIENT_ID"], prefix: '/'
 
@@ -21,38 +25,36 @@ end
 bot.command :create do |event|
   #event.send_message("語彙を5つ入力してください。#{event.user.name}(まだ未実装です)")
   #event.send_message("#{event.message}")
-  eventstr = "#{event.message}"           # event.messageを文字列に変換
-  goiarr = eventstr.split                 # 語彙の配列に分割
-  goiarr.delete_at(0)                     # 先頭は /create のため削除
-  goiarr = goiarr.uniq                    # 重複を削除
+    eventstr = "#{event.message}"           # event.messageを文字列に変換
+    goiarr = eventstr.split                 # 語彙の配列に分割
+    goiarr.delete_at(0)                     # 先頭は /create のため削除
+    goiarr = goiarr.uniq                    # 重複を削除
 
-  if goiarr.length == GOI_ARR_LENGTH then
-    event.send_message("語彙を登録します。#{event.user.name}")
-    # tmp/ユーザ名.goiに保存
-    fname = "tmp/#{event.user.name}.goi"
-    File.open(fname,"w") do |f|
-      goiarr.each do |i|
-        f.puts(i)
+    if goiarr.length == GOI_ARR_LENGTH then
+      event.send_message("語彙を登録します。#{event.user.name}")
+      # tmp/ユーザ名.goiに保存
+      fname = "tmp/#{event.user.name}.goi"
+      File.open(fname,"w") do |f|
+        goiarr.each do |i|
+          f.puts(i)
+        end
       end
-    end
-    # goi/ユーザ名.txtに履歴として保存
-    fname = "goi/#{event.user.name}.txt"
-    File.open(fname,"a") do |f|
-      goiarr.each do |i|
-        f.puts(i)
+      # goi/ユーザ名.txtに履歴として保存
+      fname = "goi/#{event.user.name}.txt"
+      File.open(fname,"a") do |f|
+        goiarr.each do |i|
+          f.puts(i)
+        end
+        f.puts("----------------------------------------")
       end
-      f.puts("----------------------------------------")
+      # 変えたら任意のチャンネルにメッセージを投下(不正防止)
+      bot.send_message(ENV["GENERAL_CHANNEL_ID"], "#{event.user.name}の語彙を登録しました。")
+    else
+      event.send_message("語彙を重複無く5つ入力してください。#{event.user.name}")
     end
-    # 変えたら任意のチャンネルにメッセージを投下(不正防止)
-    bot.send_message(ENV["GENERAL_CHANNEL_ID"], "#{event.user.name}の語彙を登録しました。")
-  else
-    event.send_message("語彙を重複無く5つ入力してください。#{event.user.name}")
-  end
 end
 
-
 # 語彙リストを表示 ==============================================================
-#bot.command :list do |event|
 bot.command :list do |event|
   fname = "tmp/#{event.user.name}.goi"
   begin
@@ -108,12 +110,13 @@ end
 bot.command :deck do |event|
   option = "#{event.message}".split()[1]
   case option
-  # deck配列にデッキテキストを流し込む
+  # オプションinit deck配列にデッキテキストを流し込む
   when "init" then
     fname = "deck/deck.txt"
     begin
       File.open(fname) do |file|
         deck = file.read.split()
+        deck_init = deck
       end
       event.send_message("デッキを初期化しました。")
     # エラーコード
@@ -135,6 +138,43 @@ bot.command :deck do |event|
   end
 end
 
+# 参加者の順序 =================================================================
+bot.command :turn do |event|
+  event_split = "#{event.message}".split()
+  option = event_split[1]
+  case option
+  # 参加者を登録してランダムな順序にする
+  when "init" then
+    turn = event_split
+    turn.slice!(0..1)
+    if (turn.empty?) then
+      event.send_message("参加者を一人以上入力してください。")
+      break
+    end
+    turn.shuffle!
+    event.send_message("参加者を登録しました。")
+    str = ""
+    turn.each.with_index(1) do |a,i|
+      str << i.to_s() + ": " + a + "\n"
+    end
+    event.send_message(str)
+  else
+    if (option.nil?) then
+      if (turn.nil? || turn.empty?) then
+        event.send_message("参加者を登録してください。\n/turn init [参加者]")
+      else
+        str = ""
+        turn.each.with_index(1) do |a,i|
+          str << i.to_s() + ": " + a + "\n"
+        end
+        event.send_message(str)
+      end
+    else
+      event.send_message("正しいコマンドを入力してください。")
+    end
+  end
+end
+
 # ヘルプ表示  ==================================================================
 bot.command :help do |event|
   event.send_message(" /hello : 挨拶します
@@ -142,8 +182,8 @@ bot.command :help do |event|
   /list : 語彙リストを見せます
   /cast [1-5] : 語彙リストの中から番号に対応した語彙を表示します
   /help : 今開いてるのはなんですか？
-  ----------------------未実装---------------------
   /deck : デッキからランダムに語彙を1つ表示します
+  /turn : 手番の順序を表示します
   ----------------------謎機能---------------------
   /fenia : フェニアを召喚します")
 end
@@ -165,7 +205,5 @@ bot.command :fenia do |event|
     event.send_message(":hatched_chick: フェニアだよ！")
   end
 end
-
-
 
 bot.run
