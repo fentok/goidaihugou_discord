@@ -23,7 +23,7 @@ rubyで動作します。
 -TOKENとCLIENT_IDはdiscord appsからコピペ
 -GENERAL_CHANNEL_IDはサーバーの中で通知を飛ばしたいチャンネルのIDを記述
 
-- "deck/deck.txt"に、山札から引かせたい単語を追加する。
+- `deck/deck.txt`に、山札から引かせたい単語を追加する。
 
 # botの起動
 `ruby app/goihugobot.rb`
