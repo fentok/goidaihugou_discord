@@ -181,29 +181,10 @@ bot.command :help do |event|
   /create [重複なしの単語5つ] : 語彙リストを作成します
   /list : 語彙リストを見せます
   /cast [1-5] : 語彙リストの中から番号に対応した語彙を表示します
-  /help : 今開いてるのはなんですか？
+  /help : ヘルプを表示します
   /deck : デッキからランダムに語彙を1つ表示します
-  /turn : 手番の順序を表示します
-  ----------------------謎機能---------------------
-  /fenia : フェニアを召喚します")
+  /turn : 手番の順序を表示します")
 end
 
-#==============================================================================
-
-
-
-
-
-
-# フェニア召喚機能  =============================================================
-bot.command :fenia do |event|
-  option = "#{event.message}".split()[1]
-  case option
-  when "burn" then
-    event.send_message(":fire::hatched_chick::fire:\n\n人人人\n> :poultry_leg: <\n^Y^Y^Y^")
-  else
-    event.send_message(":hatched_chick: フェニアだよ！")
-  end
-end
 
 bot.run
