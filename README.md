@@ -1,5 +1,6 @@
 # goidaihugou_discord
-Discord上で語彙大富豪をするのを支援するbotです
+Discord上で語彙大富豪をするのを支援するbotです。
+rubyで動作します。
 
 
 # 環境設定
