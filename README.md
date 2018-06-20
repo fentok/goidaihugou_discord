@@ -25,6 +25,10 @@ rubyで動作します。
 
 - `deck/deck.txt`に、山札から引かせたい単語を追加する。
 
+- botフォルダ内に、以下のフォルダを作成
+  - `tmp`
+  - `goi`
+
 # botの起動
 `ruby app/goihugobot.rb`
 
